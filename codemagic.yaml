@@ -5,15 +5,19 @@ workflows:
     environment:
       flutter: 3.16.9
     scripts:
-      - name: Build APK
+      - name: Get dependencies
+        script: flutter pub get
+      - name: Build with Gradle directly
         script: |
-          flutter pub get
-          flutter build apk --debug --android-skip-build-dependency-validation || true
-          echo "Finding APK..."
-          find /Users/builder/clone/build -name "*.apk" 2>/dev/null || true
-          find . -name "*.apk" 2>/dev/null || true
+          cd android
+          ./gradlew assembleDebug --no-daemon
+          echo "=== Searching for APK ==="
+          find /Users/builder/clone -name "*.apk" 2>/dev/null
+          echo "=== Copying APK ==="
+          mkdir -p /Users/builder/clone/output
+          find /Users/builder/clone -name "*.apk" -exec cp {} /Users/builder/clone/output/ \;
+          ls -la /Users/builder/clone/output/
     artifacts:
-      - build/**/*.apk
-      - build/app/outputs/**/*.apk
-      - build/app/outputs/flutter-apk/*.apk
+      - android/app/build/outputs/apk/debug/app-debug.apk
+      - output/*.apk
       - "**/*.apk"
