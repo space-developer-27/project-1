@@ -36,3 +36,9 @@ android {
 flutter {
     source = "../.."
 }
+
+repositories {
+    google()
+    mavenCentral()
+    maven { url "https://storage.googleapis.com/download.flutter.io" }
+}
